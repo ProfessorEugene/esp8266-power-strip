@@ -1,0 +1,22 @@
+
+<svg class="background">
+  <svg y="0" height ="105">
+      <text id="status" fill="red" font-family="System-Regular">Disconnected</text>
+  </svg>
+  <svg y="110" height="60">
+    <use id="btn0" class="plug" href="#square-button" y="0" fill="fb-yellow" width="50%">
+      <set href="#text" attributeName="text-buffer" to="1" />
+    </use>
+    <use id="btn1" class="plug" href="#square-button" x="50%" y="0" fill="fb-yellow"  width="50%">
+      <set href="#text" attributeName="text-buffer" to="2" />
+    </use>
+  </svg>
+  <svg y="180" height="60">
+    <use id="btn2" class="plug" href="#square-button" y="0" fill="fb-yellow" width="50%">
+      <set href="#text" attributeName="text-buffer" to="3" />
+    </use>
+    <use id="btn3" class="plug" href="#square-button" x="50%" y="0" fill="fb-yellow"  width="50%">
+      <set href="#text" attributeName="text-buffer" to="4" />
+    </use>
+  </svg>
+</svg>
