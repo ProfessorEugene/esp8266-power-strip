@@ -1,0 +1,379 @@
+<html>
+
+<head>
+    <title>Microphone Strip Control</title>
+    <style>
+        body {
+            background-color: black;
+            margin-top: 0px;
+            margin-bottom: 0px;
+            margin-left: 0px;
+            margin-right: 0px;
+            padding: 0;
+        }
+
+        #main {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+
+        #vuMeterContainer {
+            position: absolute;
+            width: 50%;
+            height: 75%;
+            /* border: solid black 1px; */
+            /* background-color: gray; */
+            left: 0;
+            padding: 0 0 0 0;
+            margin: 0;
+        }
+
+        #vuMeter {
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+            background-color: green;
+        }
+
+        #plugsContainer {
+            position: absolute;
+            width: 50%;
+            height: 75%;
+            /* border: solid blue 1px; */
+            /* background-color: gray; */
+            right: 0;
+            padding: 0 0 0 0;
+            margin: 0;
+        }
+
+        .plug {
+            width: 100%;
+            height: 25%;
+            border: solid red 1px;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            padding: 0 0 0 0;
+        }
+
+        #sensitivityContainer {
+            position: absolute;
+            width: 100%;
+            height: 25%;
+            bottom: 0;
+        }
+
+        #startBtn {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: solid grey 10px;
+            background-color: black;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 100;
+            color: white;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            padding: 0 0 0 0;
+        }
+
+        /* stuff for slidr */
+
+        input[type=range] {
+            -webkit-appearance: none;
+            margin: 50px 0;
+            width: 100%;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8.4px;
+            cursor: pointer;
+            animate: 0.2s;
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+            background: #3071a9;
+            border-radius: 1.3px;
+            border: 0.2px solid #010101;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+            border: 1px solid #000000;
+            height: 100px;
+            width: 100px;
+            border-radius: 3px;
+            background: #ffffff;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -46px;
+        }
+
+        input[type=range]:focus::-webkit-slider-runnable-track {
+            background: #367ebd;
+        }
+
+        input[type=range]::-moz-range-track {
+            width: 100%;
+            height: 8.4px;
+            cursor: pointer;
+            animate: 0.2s;
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+            background: #3071a9;
+            border-radius: 1.3px;
+            border: 0.2px solid #010101;
+        }
+
+        input[type=range]::-moz-range-thumb {
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+            border: 1px solid #000000;
+            height: 36px;
+            width: 16px;
+            border-radius: 3px;
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        input[type=range]::-ms-track {
+            width: 100%;
+            height: 8.4px;
+            cursor: pointer;
+            animate: 0.2s;
+            background: transparent;
+            border-color: transparent;
+            border-width: 16px 0;
+            color: transparent;
+        }
+
+        input[type=range]::-ms-fill-lower {
+            background: #2a6495;
+            border: 0.2px solid #010101;
+            border-radius: 2.6px;
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+        }
+
+        input[type=range]::-ms-fill-upper {
+            background: #3071a9;
+            border: 0.2px solid #010101;
+            border-radius: 2.6px;
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+        }
+
+        input[type=range]::-ms-thumb {
+            box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+            border: 1px solid #000000;
+            height: 36px;
+            width: 16px;
+            border-radius: 3px;
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        input[type=range]:focus::-ms-fill-lower {
+            background: #3071a9;
+        }
+
+        input[type=range]:focus::-ms-fill-upper {
+            background: #367ebd;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div id="vuMeterContainer">
+            <div id="vuMeter"></div>
+        </div>
+        <div id="plugsContainer">
+            <div class="plug"></div>
+            <div class="plug"></div>
+            <div class="plug"></div>
+            <div class="plug"></div>
+        </div>
+        <div id="sensitivityContainer">
+            <input id="sensitivitySlider" type="range" min="1" max="100" value="50" />
+        </div>
+        <div id="startBtn">
+            START
+        </div>
+    </div>
+    <script>
+        (function () {
+            var StripClient = function () {
+                this.requesting = false;
+                this.requestIdPrefix = new Date().getTime() + "_";
+                this.requestId = 0;
+            };
+            StripClient.prototype = {
+                setState: function (state) {
+                    if (this.requesting) {
+                        /* do nothing if a request is in progress */
+                        return;
+                    }
+                    this.requesting = true;
+                    var self = this;
+                    /* time out requests */
+                    setTimeout(function () {
+                        self.requesting = false;
+                    }, 1000);
+                    var requestId = this.requestIdPrefix + (this.requestId++);
+                    var img = new Image();
+                    img.onerror = function () {
+                        self.requesting = false;
+                    };
+                    img.onload = function () {
+                        self.requesting = false;
+                    };
+                    img.src = 'http://strip.local/set?s=' + state;
+                }
+            };
+            var stripClient = new StripClient();
+            var VUMeter = function () {
+                this.listener = function () { };
+                this.running = false;
+            };
+            VUMeter.prototype = {
+                listen: function (listener) {
+                    this.listener = listener;
+                    return this;
+                },
+                start: function () {
+                    var self = this;
+                    if (this.running) {
+                        return;
+                    }
+                    /* locate audioctx */
+                    var AudioContext = window.AudioContext || window.webkitAudioContext;
+                    var audioContext = new AudioContext();
+                    /* for ios attempt to run startRendering */
+                    try {
+                        audioContext.startRendering();
+                    } catch (e) {
+                        /*ignore*/
+                    }
+                    /* try to get audio */
+                    try {
+                        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+                        navigator.getUserMedia({
+                            "audio": {
+                                "mandatory": {
+                                    "googEchoCancellation": "false",
+                                    "googAutoGainControl": "false",
+                                    "googNoiseSuppression": "false",
+                                    "googHighpassFilter": "false"
+                                },
+                                "optional": []
+                            },
+                        }, function (stream) {
+                            /* function to create a vu meter */
+                            var createMeter = function (audioContext, clipLevel, averaging, clipLag) {
+                                var processor = audioContext.createScriptProcessor(512);
+                                processor.onaudioprocess = function (event) {
+                                    var buf = event.inputBuffer.getChannelData(0);
+                                    var bufLength = buf.length;
+                                    var sum = 0;
+                                    var x;
+                                    /* do RMs on samples */
+                                    for (var i = 0; i < bufLength; i++) {
+                                        x = buf[i];
+                                        if (Math.abs(x) >= this.clipLevel) {
+                                            this.clipping = true;
+                                            this.lastClip = window.performance.now();
+                                        }
+                                        sum += x * x;
+                                    }
+                                    var rms = Math.sqrt(sum / bufLength);
+                                    /*
+                                        smooth this out with averaging factory applied to previous sample
+                                        take the max here because fast attack slow release is desired
+                                    */
+                                    this.volume = Math.max(rms, this.volume * this.averaging);
+                                };
+                                processor.clipping = false;
+                                processor.lastClip = 0;
+                                processor.volume = 0;
+                                processor.clipLevel = clipLevel || 0.98;
+                                processor.averaging = averaging || 0.95;
+                                processor.clipLag = clipLag || 750;
+                                /* no effect since input is not copied to output but works around chrome bug */
+                                processor.connect(audioContext.destination);
+                                processor.checkClipping = function () {
+                                    if (!this.clipping)
+                                        return false;
+                                    if ((this.lastClip + this.clipLag) < window.performance.now())
+                                        this.clipping = false;
+                                    return this.clipping;
+                                };
+                                processor.shutdown = function () {
+                                    this.disconnect();
+                                    this.onaudioprocess = null;
+                                };
+                                return processor;
+                            }
+
+                            /* create a audio node */
+                            var mediaStreamSource = audioContext.createMediaStreamSource(stream);
+                            /* create a meter! */
+                            var meter = createMeter(audioContext);
+                            /* connect */
+                            mediaStreamSource.connect(meter);
+                            /* update running flag */
+                            running = true;
+                            /* define a loop */
+                            /* loop function */
+                            var runLoop = function () {
+                                /* post volume to listener */
+                                self.listener(meter.volume);
+                                /* looop */
+                                window.requestAnimationFrame(runLoop);
+                            }
+                            /* loop! */
+                            runLoop();
+                        }, function (error) {
+                            console.error(error);
+                            alert('Could not capture mic:' + error.message);
+                        });
+                    } catch (error) {
+                        console.error(error);
+                        alert('Error attempting to capture mic :' + error.message);
+                    }
+                }
+            };
+            var vuMeterElement = document.getElementById('vuMeter');
+            var sensitivitySlider = document.getElementById('sensitivitySlider');
+            var plugElements = document.getElementsByClassName('plug');
+            var vuMeter = new VUMeter().listen(function (value) {
+                var adjustedRange = (value * 100) / sensitivitySlider.value;
+                var state = 0x0F;
+                for (var i = 0; i < plugElements.length; i++) {
+                    var threshold = (i + 1) * (1 / plugElements.length);
+
+                    if ((adjustedRange * plugElements.length) > threshold) {
+                        plugElements[plugElements.length - i - 1].style['background-color'] = 'red';
+                        state = state ^ (0x01 << i);
+                    } else {
+                        plugElements[plugElements.length - i - 1].style['background-color'] = 'black';
+                    }
+                }
+                stripClient.setState(state);
+                // console.log(adjustedRange * 255);
+                vuMeterElement.style['background-color'] = 'rgb(' + Math.round(255 * adjustedRange) + ',' + Math.round(255 * (1 - adjustedRange)) + ',0)';
+                vuMeterElement.style.height = (adjustedRange * 100) + "%";
+            });
+            var startBtn = document.getElementById('startBtn');
+            startBtn.addEventListener('click', function () {
+                startBtn.style.visibility = 'hidden';
+                vuMeter.start();
+            });
+        })();
+    </script>
+</body>
+
+</html>

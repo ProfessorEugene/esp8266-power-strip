@@ -1,0 +1,12 @@
+{
+    "terminal.integrated.env.osx": {
+        "PATH": "/Users/eug/.platformio/penv/bin:/Users/eug/apps/google-cloud-sdk/bin:/Users/eug/pebble-dev/PebbleSDK-current/bin:/Users/eug/bin:/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Users/eug/.platformio/penv/bin"
+    },
+    "files.associations": {
+        "array": "cpp",
+        "functional": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp",
+        "initializer_list": "cpp"
+    }
+}
